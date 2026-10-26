@@ -1,0 +1,118 @@
+<!DOCTYPE html>  <!-- 声明这是 HTML5 文档 -->
+<html lang="zh"> <!-- lang="zh" 告诉浏览器页面语言是中文 -->
+    <head>
+        <meta charset="UTF-8"> <!-- 设置字符编码为 UTF-8，支持中文显示 -->
+        <style>
+            /* 重置所有元素的默认边距，统一盒模型 */
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+
+            /* 弹窗主体：固定宽度 280px，白色背景 */
+            body {
+                width: 280px;              /* 扩展弹窗的固定宽度 */
+                font-family: "Microsoft YaHei", sans-serif;
+                background: #ffffff;
+                padding: 16px;             /* 内边距，内容不贴边 */
+            }
+
+            /* 标题样式 */
+            h1 {
+                font-size: 15px;
+                color: #333;
+                margin-bottom: 16px;
+                text-align: center;
+            }
+
+            /* 颜色格子：用 CSS Grid 排成 5 列 */
+            .color-grid {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr); /* 5 列等宽 */
+                gap: 8px;                              /* 格子之间的间距 */
+                margin-bottom: 16px;
+            }
+
+            /* 每个颜色按钮 */
+            .color-btn {
+                width: 100%;
+                aspect-ratio: 1;           /* 宽高比 1:1，保持正方形 */
+                border-radius: 8px;
+                border: 2px solid transparent; /* 默认透明边框，hover 时变色 */
+                cursor: pointer;
+                transition: transform 0.1s, border-color 0.2s; /* 动画过渡 */
+            }
+
+            /* 鼠标悬停时放大 + 显示边框 */
+            .color-btn:hover {
+                transform: scale(1.1);     /* 放大 10% */
+                border-color: #333;        /* 边框变深色 */
+            }
+
+            /* 点击时显示边框（表示选中） */
+            .color-btn:active { border-color: #333; }
+
+            /* 自定义颜色行：标签 + 颜色选择器并排 */
+            .custom-row {
+                display: flex;
+                gap: 8px;
+                align-items: center;       /* 垂直居中对齐 */
+                margin-bottom: 12px;
+            }
+
+            .custom-row label { font-size: 13px; color: #555; }
+
+            /* 原生颜色选择器 input[type="color"] */
+            #customColor {
+                flex: 1;                   /* 占满剩余宽度 */
+                height: 36px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                padding: 2px;
+            }
+
+            /* 重置按钮：浅灰色，hover 时变深 */
+            #resetBtn {
+                width: 100%;
+                padding: 10px;
+                background: #f0f0f0;
+                border: none;
+                border-radius: 8px;
+                font-size: 13px;
+                cursor: pointer;
+                color: #555;
+                transition: background 0.2s;
+            }
+
+            #resetBtn:hover { background: #e0e0e0; } /* 悬停时加深背景 */
+
+            /* 当前颜色显示文字：居中小字 */
+            #currentColor {
+                text-align: center;
+                font-size: 11px;
+                color: #999;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>🎨 页面配色器</h1>
+
+        <!-- 预设颜色格子容器，颜色按钮由 popup.js 动态生成插入这里 -->
+        <div class="color-grid" id="colorGrid"></div>
+
+        <!-- 自定义颜色行：标签 + 原生颜色选择器 -->
+        <div class="custom-row">
+            <label>自定义：</label>
+            <!-- type="color" 调出系统颜色选择器，value 是初始颜色 -->
+            <input type="color" id="customColor" value="#ffffff">
+        </div>
+
+        <!-- 重置按钮：点击恢复网页原始背景 -->
+        <button id="resetBtn">↺ 重置原始颜色</button>
+
+        <!-- 显示当前选中的颜色代码，由 popup.js 动态更新 -->
+        <div id="currentColor">当前：#ffffff</div>
+
+        <!-- 把 popup.js 放在 body 最后，确保 DOM 元素都已加载再执行 JS -->
+        <script src="popup.js"></script>
+    </body>
+</html>

@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "划词翻译",
+    "version": "1.0",
+    "description": "选中文字自动弹出翻译",
+    "permissions": ["activeTab", "storage"],
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"],
+            "css": []
+        }
+    ],
+    "action": {
+        "default_title": "划词翻译"
+    }
+}

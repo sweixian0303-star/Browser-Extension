@@ -1,0 +1,13 @@
+{
+    "manifest_version":3,
+    "name": "快速记事本",
+    "version": "1.0",
+    "description":"点击图标快速笔记本，自动保存",
+    "action":{
+        "default_popup":"popup.html",
+        "default_title":"快速记事本"
+    },
+    "permissions":[
+        "storage"
+    ]
+}

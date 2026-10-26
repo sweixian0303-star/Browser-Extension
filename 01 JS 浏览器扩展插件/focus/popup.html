@@ -1,0 +1,162 @@
+<!DOCTYPE html>  <!-- 声明这是 HTML5 文档 -->
+<html lang="zh"> <!-- 页面语言设为中文 -->
+    <head>
+        <meta charset="UTF-8"> <!-- 字符编码 UTF-8，支持中文 -->
+        <style>
+            /* 重置所有元素默认边距，统一盒模型 */
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+
+            /* 弹窗主体：深色背景，固定宽度 260px */
+            body {
+                width: 260px;              /* 扩展弹窗固定宽度 */
+                font-family: "Microsoft YaHei", sans-serif;
+                background: #0f0f1a;       /* 深夜蓝背景 */
+                color: #e0e0e0;            /* 浅灰文字，深色背景下易读 */
+                padding: 16px;
+            }
+
+            /* 标题：紫色，居中 */
+            h1 {
+                font-size: 15px;
+                margin-bottom: 16px;
+                text-align: center;
+                color: #a78bfa;            /* 紫色标题 */
+            }
+
+            /* 每一行开关：标签文字在左，开关在右 */
+            .toggle-row {
+                display: flex;
+                justify-content: space-between; /* 左右两端对齐 */
+                align-items: center;            /* 垂直居中 */
+                padding: 10px 0;
+                border-bottom: 1px solid #1e1e3a; /* 行与行之间的分隔线 */
+            }
+
+            /* 最后一行不显示下边框 */
+            .toggle-row:last-of-type { border-bottom: none; }
+
+            /* 开关左边的文字标签 */
+            .toggle-label {
+                font-size: 13px;
+                color: #c0c0d0;
+            }
+
+            /* 开关容器：相对定位，用于内部绝对定位的滑块 */
+            .switch {
+                position: relative;
+                width: 40px;
+                height: 22px;
+            }
+
+            /* 隐藏原生 checkbox，用自定义样式代替 */
+            .switch input { display: none; }
+
+            /* 开关轨道：圆角矩形，默认深色（关闭状态） */
+            .slider {
+                position: absolute;
+                inset: 0;                  /* 等于 top:0; right:0; bottom:0; left:0，撑满父容器 */
+                background: #2d2d4a;       /* 关闭时深色背景 */
+                border-radius: 22px;       /* 胶囊形状 */
+                cursor: pointer;
+                transition: 0.3s;          /* 背景色切换动画 */
+            }
+
+            /* 开关圆点：用 ::before 伪元素实现 */
+            .slider::before {
+                content: "";               /* 伪元素必须有 content 才能显示 */
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                background: white;         /* 白色圆点 */
+                border-radius: 50%;        /* 变成圆形 */
+                left: 3px;                 /* 默认在左边（关闭状态） */
+                top: 3px;
+                transition: 0.3s;          /* 滑动动画 */
+            }
+
+            /* checkbox 勾选时（开启状态）：轨道变紫色 */
+            input:checked + .slider { background: #a78bfa; }
+
+            /* checkbox 勾选时：圆点向右移动 18px（开启状态） */
+            input:checked + .slider::before { transform: translateX(18px); }
+
+            /* 主按钮：紫色，占满宽度 */
+            #masterBtn {
+                width: 100%;
+                padding: 12px;
+                margin-top: 14px;
+                background: #a78bfa;       /* 浅紫色（默认/关闭状态） */
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: opacity 0.2s;
+            }
+
+            #masterBtn:hover { opacity: 0.85; } /* 悬停时略微透明 */
+
+            /* 开启状态时按钮变深紫色，由 popup.js 动态添加 active 类 */
+            #masterBtn.active { background: #7c3aed; }
+
+            /* 底部状态文字：小字，深灰色 */
+            #status {
+                text-align: center;
+                font-size: 11px;
+                color: #6c6c8a;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>🎯 专注模式</h1>
+
+        <!-- 隐藏广告开关行 -->
+        <div class="toggle-row">
+            <span class="toggle-label">🚫 隐藏广告</span>
+            <label class="switch">
+                <!-- checked 表示默认勾选（开启） -->
+                <input type="checkbox" id="hideAds" checked>
+                <!-- slider 是自定义开关样式，点击 label 会触发 checkbox -->
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- 隐藏侧边栏开关行 -->
+        <div class="toggle-row">
+            <span class="toggle-label">📌 隐藏侧边栏</span>
+            <label class="switch">
+                <input type="checkbox" id="hideSidebar" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- 隐藏视频推荐开关行 -->
+        <div class="toggle-row">
+            <span class="toggle-label">🎬 隐藏视频推荐</span>
+            <label class="switch">
+                <input type="checkbox" id="hideVideos" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- 隐藏弹窗通知开关行 -->
+        <div class="toggle-row">
+            <span class="toggle-label">🔔 隐藏弹窗通知</span>
+            <label class="switch">
+                <input type="checkbox" id="hidePopups" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- 主按钮：点击开启/关闭专注模式，由 popup.js 控制 -->
+        <button id="masterBtn">🎯 开启专注模式</button>
+
+        <!-- 状态文字：由 popup.js 动态更新，显示当前是否开启 -->
+        <div id="status">点击按钮开始专注</div>
+
+        <!-- popup.js 放在 body 最后，确保 DOM 已加载再执行 -->
+        <script src="popup.js"></script>
+    </body>
+</html>
